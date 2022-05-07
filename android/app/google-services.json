@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "877080556597",
+    "project_id": "plaster-plus",
+    "storage_bucket": "plaster-plus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877080556597:android:e2a7ff5027302ea9c46d7c",
+        "android_client_info": {
+          "package_name": "com.PlasterPlus.plasterplusapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877080556597-76j1c02cu8i3n1rgtcvivt84dtjgnc0e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQO3Ig10MdHTaB867y8v25NaEyhqOSP8U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877080556597-76j1c02cu8i3n1rgtcvivt84dtjgnc0e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "877080556597-f1n0usq9sfrcrva384h0k4mm5tbcoe6e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.PlasterPlus.plasterplusapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
