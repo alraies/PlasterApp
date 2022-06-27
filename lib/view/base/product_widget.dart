@@ -52,7 +52,8 @@ class ProductWidget extends StatelessWidget {
           : 'percent';
       // bool _isClosedToday = Get.find<RestaurantController>().isRestaurantClosed(true, restaurant.active, restaurant.offDay);
       // _isAvailable = DateConverter.isAvailable(restaurant.openingTime, restaurant.closeingTime) && restaurant.active && !_isClosedToday;
-      _isAvailable = restaurant.open == 1;
+      //   _isAvailable = restaurant.open == 1;
+      _isAvailable = true;
     } else {
       _discount = (product.restaurantDiscount == 0 || isCampaign)
           ? product.discount
@@ -60,8 +61,9 @@ class ProductWidget extends StatelessWidget {
       _discountType = (product.restaurantDiscount == 0 || isCampaign)
           ? product.discountType
           : 'percent';
-      _isAvailable = DateConverter.isAvailable(
-          product.availableTimeStarts, product.availableTimeEnds);
+      _isAvailable = true;
+      // _isAvailable = DateConverter.isAvailable(
+      // product.availableTimeStarts, product.availableTimeEnds);
     }
 
     return InkWell(

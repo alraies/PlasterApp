@@ -57,23 +57,25 @@ class RestaurantController extends GetxController implements GetxService {
     _offset = offset;
   }
 
-  Future<void> getRestaurantList(String offset, bool reload) async {
-    if(offset == '1' || reload) {
+  Future<void> getRestaurantList(String offset, bool reload, int orgId) async {
+    if (offset == '1' || reload) {
       _offsetList = [];
       _offset = 1;
-      if(reload) {
+      if (reload) {
         _restaurantList = null;
       }
       update();
     }
     if (!_offsetList.contains(offset)) {
       _offsetList.add(offset);
-      Response response = await restaurantRepo.getRestaurantList(offset, _restaurantType);
+      Response response = await restaurantRepo.getRestaurantList(
+          offset, _restaurantType, orgId);
       if (response.statusCode == 200) {
         if (offset == '1') {
           _restaurantList = [];
         }
-        _restaurantList.addAll(RestaurantModel.fromJson(response.body).restaurants);
+        _restaurantList
+            .addAll(RestaurantModel.fromJson(response.body).restaurants);
         _pageSize = RestaurantModel.fromJson(response.body).totalSize;
         _isLoading = false;
         update();
@@ -81,31 +83,34 @@ class RestaurantController extends GetxController implements GetxService {
         ApiChecker.checkApi(response);
       }
     } else {
-      if(isLoading) {
+      if (isLoading) {
         _isLoading = false;
         update();
       }
     }
   }
 
-  void setRestaurantType(String type) {
+  void setRestaurantType(String type, int orgId) {
     _restaurantType = type;
-    getRestaurantList('1', true);
+    getRestaurantList('1', true, orgId);
   }
 
-  Future<void> getPopularRestaurantList(bool reload, String type, bool notify) async {
+  Future<void> getPopularRestaurantList(
+      bool reload, String type, bool notify, int orgId) async {
     _type = type;
-    if(reload){
+    if (reload) {
       _popularRestaurantList = null;
     }
-    if(notify) {
+    if (notify) {
       update();
     }
-    if(_popularRestaurantList == null || reload) {
-      Response response = await restaurantRepo.getPopularRestaurantList(type);
+    if (_popularRestaurantList == null || reload) {
+      Response response =
+          await restaurantRepo.getPopularRestaurantList(type, orgId);
       if (response.statusCode == 200) {
         _popularRestaurantList = [];
-        response.body.forEach((restaurant) => _popularRestaurantList.add(Restaurant.fromJson(restaurant)));
+        response.body.forEach((restaurant) =>
+            _popularRestaurantList.add(Restaurant.fromJson(restaurant)));
       } else {
         ApiChecker.checkApi(response);
       }
@@ -113,19 +118,22 @@ class RestaurantController extends GetxController implements GetxService {
     }
   }
 
-  Future<void> getLatestRestaurantList(bool reload, String type, bool notify) async {
+  Future<void> getLatestRestaurantList(
+      bool reload, String type, bool notify, int orgId) async {
     _type = type;
-    if(reload){
+    if (reload) {
       _latestRestaurantList = null;
     }
-    if(notify) {
+    if (notify) {
       update();
     }
-    if(_latestRestaurantList == null || reload) {
-      Response response = await restaurantRepo.getLatestRestaurantList(type);
+    if (_latestRestaurantList == null || reload) {
+      Response response =
+          await restaurantRepo.getLatestRestaurantList(type, orgId);
       if (response.statusCode == 200) {
         _latestRestaurantList = [];
-        response.body.forEach((restaurant) => _latestRestaurantList.add(Restaurant.fromJson(restaurant)));
+        response.body.forEach((restaurant) =>
+            _latestRestaurantList.add(Restaurant.fromJson(restaurant)));
       } else {
         ApiChecker.checkApi(response);
       }
@@ -134,11 +142,12 @@ class RestaurantController extends GetxController implements GetxService {
   }
 
   void setCategoryList() {
-    if(Get.find<CategoryController>().categoryList != null && _restaurant != null) {
+    if (Get.find<CategoryController>().categoryList != null &&
+        _restaurant != null) {
       _categoryList = [];
       _categoryList.add(CategoryModel(id: 0, name: 'all'.tr));
       Get.find<CategoryController>().categoryList.forEach((category) {
-        if(_restaurant.categoryIds.contains(category.id)) {
+        if (_restaurant.categoryIds.contains(category.id)) {
           _categoryList.add(category);
         }
       });
@@ -146,38 +155,50 @@ class RestaurantController extends GetxController implements GetxService {
   }
 
   void initCheckoutData(int restaurantID) {
-    if(_restaurant == null || _restaurant.id != restaurantID || Get.find<OrderController>().distance == null) {
+    if (_restaurant == null ||
+        _restaurant.id != restaurantID ||
+        Get.find<OrderController>().distance == null) {
       Get.find<CouponController>().removeCouponData(false);
       Get.find<OrderController>().clearPrevData();
-      Get.find<RestaurantController>().getRestaurantDetails(Restaurant(id: restaurantID));
-    }else {
+      Get.find<RestaurantController>()
+          .getRestaurantDetails(Restaurant(id: restaurantID));
+    } else {
       Get.find<OrderController>().initializeTimeSlot(_restaurant);
     }
   }
 
   Future<Restaurant> getRestaurantDetails(Restaurant restaurant) async {
     _categoryIndex = 0;
-    if(restaurant.name != null) {
+    if (restaurant.name != null) {
       _restaurant = restaurant;
-    }else {
+    } else {
       _isLoading = true;
       _restaurant = null;
-      Response response = await restaurantRepo.getRestaurantDetails(restaurant.id.toString());
+      Response response =
+          await restaurantRepo.getRestaurantDetails(restaurant.id.toString());
       if (response.statusCode == 200) {
         _restaurant = Restaurant.fromJson(response.body);
         Get.find<OrderController>().initializeTimeSlot(_restaurant);
         Get.find<OrderController>().getDistanceInMeter(
           LatLng(
-            double.parse(Get.find<LocationController>().getUserAddress().latitude),
-            double.parse(Get.find<LocationController>().getUserAddress().longitude),
+            double.parse(
+                Get.find<LocationController>().getUserAddress().latitude),
+            double.parse(
+                Get.find<LocationController>().getUserAddress().longitude),
           ),
-          LatLng(double.parse(_restaurant.latitude), double.parse(_restaurant.longitude)),
+          LatLng(double.parse(_restaurant.latitude),
+              double.parse(_restaurant.longitude)),
         );
       } else {
         ApiChecker.checkApi(response);
       }
       Get.find<OrderController>().setOrderType(
-        _restaurant != null ? _restaurant.delivery ? 'delivery' : 'take_away' : 'delivery', notify: false,
+        _restaurant != null
+            ? _restaurant.delivery
+                ? 'delivery'
+                : 'take_away'
+            : 'delivery',
+        notify: false,
       );
 
       _isLoading = false;
@@ -186,29 +207,36 @@ class RestaurantController extends GetxController implements GetxService {
     return _restaurant;
   }
 
-  Future<void> getRestaurantProductList(int restaurantID, int offset, String type, bool notify) async {
+  Future<void> getRestaurantProductList(
+      int restaurantID, int offset, String type, bool notify) async {
     _foodOffset = offset;
-    if(offset == 1 || _restaurantProducts == null) {
+    if (offset == 1 || _restaurantProducts == null) {
       _type = type;
       _foodOffsetList = [];
       _restaurantProducts = null;
       _foodOffset = 1;
-      if(notify) {
+      if (notify) {
         update();
       }
     }
     if (!_foodOffsetList.contains(offset)) {
       _foodOffsetList.add(offset);
       Response response = await restaurantRepo.getRestaurantProductList(
-        restaurantID, offset,
-        (_restaurant != null && _restaurant.categoryIds.length > 0 && _categoryIndex != 0)
-            ? _categoryList[_categoryIndex].id : 0, type,
+        restaurantID,
+        offset,
+        (_restaurant != null &&
+                _restaurant.categoryIds.length > 0 &&
+                _categoryIndex != 0)
+            ? _categoryList[_categoryIndex].id
+            : 0,
+        type,
       );
       if (response.statusCode == 200) {
         if (offset == 1) {
           _restaurantProducts = [];
         }
-        _restaurantProducts.addAll(ProductModel.fromJson(response.body).products);
+        _restaurantProducts
+            .addAll(ProductModel.fromJson(response.body).products);
         _foodPageSize = ProductModel.fromJson(response.body).totalSize;
         _foodPaginate = false;
         update();
@@ -216,7 +244,7 @@ class RestaurantController extends GetxController implements GetxService {
         ApiChecker.checkApi(response);
       }
     } else {
-      if(_foodPaginate) {
+      if (_foodPaginate) {
         _foodPaginate = false;
         update();
       }
@@ -240,16 +268,19 @@ class RestaurantController extends GetxController implements GetxService {
   void setCategoryIndex(int index) {
     _categoryIndex = index;
     _restaurantProducts = null;
-    getRestaurantProductList(_restaurant.id, 1, Get.find<RestaurantController>().type, false);
+    getRestaurantProductList(
+        _restaurant.id, 1, Get.find<RestaurantController>().type, false);
     update();
   }
 
   Future<void> getRestaurantReviewList(String restaurantID) async {
     _restaurantReviewList = null;
-    Response response = await restaurantRepo.getRestaurantReviewList(restaurantID);
+    Response response =
+        await restaurantRepo.getRestaurantReviewList(restaurantID);
     if (response.statusCode == 200) {
       _restaurantReviewList = [];
-      response.body.forEach((review) => _restaurantReviewList.add(ReviewModel.fromJson(review)));
+      response.body.forEach(
+          (review) => _restaurantReviewList.add(ReviewModel.fromJson(review)));
     } else {
       ApiChecker.checkApi(response);
     }
@@ -258,15 +289,15 @@ class RestaurantController extends GetxController implements GetxService {
 
   bool isRestaurantClosed(bool today, bool active, List<Schedules> schedules) {
     DateTime _date = DateTime.now();
-    if(!today) {
+    if (!today) {
       _date = _date.add(Duration(days: 1));
     }
     int _weekday = _date.weekday;
-    if(_weekday == 7) {
+    if (_weekday == 7) {
       _weekday = 0;
     }
-    for(int index=0; index<schedules.length; index++) {
-      if(_weekday == schedules[index].day) {
+    for (int index = 0; index < schedules.length; index++) {
+      if (_weekday == schedules[index].day) {
         return false;
       }
     }
@@ -274,20 +305,20 @@ class RestaurantController extends GetxController implements GetxService {
   }
 
   bool isRestaurantOpenNow(bool active, List<Schedules> schedules) {
-    if(isRestaurantClosed(true, active, schedules)) {
+    if (isRestaurantClosed(true, active, schedules)) {
       return false;
     }
     int _weekday = DateTime.now().weekday;
-    if(_weekday == 7) {
+    if (_weekday == 7) {
       _weekday = 0;
     }
-    for(int index=0; index<schedules.length; index++) {
-      if(_weekday == schedules[index].day
-          && DateConverter.isAvailable(schedules[index].openingTime, schedules[index].closingTime)) {
+    for (int index = 0; index < schedules.length; index++) {
+      if (_weekday == schedules[index].day &&
+          DateConverter.isAvailable(
+              schedules[index].openingTime, schedules[index].closingTime)) {
         return true;
       }
     }
     return false;
   }
-
 }

@@ -5,8 +5,13 @@ class AppConstants {
   static const String APP_NAME = 'Plaster Plus';
   static const double APP_VERSION = 5.3;
 
-  static const String BASE_URL = 'http://192.168.0.111/PlasterPlus';
+  //static const String BASE_URL = 'http://192.168.123.161/PlasterPlus';
+  static const String BASE_URL = 'http://192.168.0.139/PlasterPlus';
+  //static const String BASE_URL = 'https://plaster-iq.com';
+
   static const String CATEGORY_URI = '/api/v1/categories';
+  static const String ORGS_URI = '/api/v1/orgs';
+
   static const String BANNER_URI = '/api/v1/banners';
   static const String RESTAURANT_PRODUCT_URI = '/api/v1/products/latest';
   static const String POPULAR_PRODUCT_URI = '/api/v1/products/popular';
@@ -60,6 +65,8 @@ class AppConstants {
       '/api/v1/delivery-man/last-location?order_id=';
   static const String DELIVER_MAN_REVIEW_URI =
       '/api/v1/delivery-man/reviews/submit';
+
+  static const String ORG_URI = '/api/v1/orgs';
   static const String RESTAURANT_URI = '/api/v1/restaurants/get-restaurants';
   static const String POPULAR_RESTAURANT_URI = '/api/v1/restaurants/popular';
   static const String LATEST_RESTAURANT_URI = '/api/v1/restaurants/latest';

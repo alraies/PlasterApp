@@ -21,9 +21,12 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocationController extends GetxController implements GetxService {
   final LocationRepo locationRepo;
+  SharedPreferences prefs;
+  int orgId;
   LocationController({@required this.locationRepo});
 
   Position _position = Position(
@@ -76,6 +79,10 @@ class LocationController extends GetxController implements GetxService {
   int get zoneID => _zoneID;
   bool get buttonDisabled => _buttonDisabled;
   GoogleMapController get mapController => _mapController;
+  retrieveIntValue() async {
+    prefs = await SharedPreferences.getInstance();
+    orgId = prefs.getInt("orgId");
+  }
 
   Future<AddressModel> getCurrentLocation(bool fromAddress,
       {GoogleMapController mapController,
@@ -387,7 +394,7 @@ class LocationController extends GetxController implements GetxService {
       await Get.find<WishListController>().getWishList();
       Get.find<AuthController>().updateZone();
     }
-    HomeScreen.loadData(false);
+    HomeScreen.loadData(false, orgId);
     Get.find<OrderController>().clearPrevData();
     if (fromSignUp) {
       Get.offAllNamed(RouteHelper.getInterestRoute());

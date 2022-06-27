@@ -185,17 +185,16 @@ class BottomButton extends StatelessWidget {
                   padding: EdgeInsets.zero,
                 ),
                 onPressed: () => Get.toNamed(RouteHelper.getPickMapRoute(
-                  route == null
-                      ? fromSignUp
+                  route ??
+                      (fromSignUp
                           ? RouteHelper.signUp
-                          : RouteHelper.accessLocation
-                      : route,
+                          : RouteHelper.accessLocation),
                   route != null,
                 )),
                 child:
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Padding(
-                    padding: EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                         right: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                     child:
                         Icon(Icons.map, color: Theme.of(context).primaryColor),
